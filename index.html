@@ -53,9 +53,14 @@
     html, body {
       width: 100%;
       height: 100%;
+      height: 100dvh;
       background-color: var(--bg-body);
       color: var(--primary-text);
       overflow: hidden;
+      padding-top: env(safe-area-inset-top, 0px);
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+      padding-left: env(safe-area-inset-left, 0px);
+      padding-right: env(safe-area-inset-right, 0px);
     }
 
     /* Common scrollbar */
@@ -77,7 +82,9 @@
     #app-container {
       display: flex;
       width: 100vw;
+      width: 100dvw;
       height: 100vh;
+      height: 100dvh;
       position: relative;
       overflow: hidden;
     }
@@ -91,18 +98,22 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 20px;
+      padding: clamp(12px, 3vw, 24px);
+      overflow-y: auto;
     }
 
     .onboarding-card {
       background: var(--bg-sidebar);
       border-radius: 16px;
-      padding: 32px 28px;
+      padding: clamp(20px, 4vw, 32px) clamp(16px, 4vw, 28px);
       width: 100%;
       max-width: 420px;
+      max-height: 94dvh;
+      overflow-y: auto;
       box-shadow: 0 12px 32px rgba(0,0,0,0.5);
       text-align: center;
       position: relative;
+      margin: auto;
     }
 
     .onboarding-logo {
@@ -1134,7 +1145,43 @@
       display: none !important;
     }
 
-    /* Mobile Responsive Logic (< 700px) */
+    /* ==================== RESPONSIVE BREAKPOINTS (WIDTH & LENGTH) ==================== */
+
+    /* Desktop & Ultra-wide Screens (> 1200px Width) */
+    @media (min-width: 1200px) {
+      #sidebar {
+        width: 360px;
+        min-width: 360px;
+      }
+      .messages-container {
+        align-items: center;
+      }
+      .message-bubble-wrapper {
+        width: 100%;
+        max-width: 760px;
+      }
+      .message-bubble-wrapper.sent {
+        align-self: center;
+        align-items: flex-end;
+      }
+      .message-bubble-wrapper.received {
+        align-self: center;
+        align-items: flex-start;
+      }
+    }
+
+    /* Tablet Screens (701px to 1024px Width) */
+    @media (min-width: 701px) and (max-width: 1024px) {
+      #sidebar {
+        width: 300px;
+        min-width: 280px;
+      }
+      .message-bubble-wrapper {
+        max-width: 82%;
+      }
+    }
+
+    /* Mobile Devices (< 700px Width) */
     @media (max-width: 700px) {
       #sidebar {
         width: 100%;
@@ -1152,6 +1199,133 @@
       }
       .mobile-back-btn {
         display: flex;
+      }
+      .message-bubble-wrapper {
+        max-width: 88%;
+      }
+      .input-bar {
+        padding: 8px 10px;
+        padding-bottom: max(8px, env(safe-area-inset-bottom, 8px));
+        gap: 8px;
+      }
+      .input-textarea-wrapper textarea,
+      .input-field-container input {
+        font-size: 16px; /* Prevents unwanted browser auto-zoom on mobile devices */
+      }
+      .emoji-picker-popup {
+        left: 8px;
+        right: 8px;
+        bottom: 60px;
+        grid-template-columns: repeat(6, 1fr);
+      }
+      .attachment-popup {
+        left: 8px;
+        bottom: 60px;
+      }
+    }
+
+    /* Compact Mobile Devices (< 380px Width) */
+    @media (max-width: 380px) {
+      .sidebar-header {
+        padding: 0 8px;
+        gap: 8px;
+      }
+      .chat-avatar-wrapper {
+        width: 42px;
+        height: 42px;
+      }
+      .chat-item {
+        padding: 8px 10px;
+        gap: 10px;
+      }
+      .chat-name {
+        font-size: 14px;
+      }
+      .message-bubble {
+        font-size: 13.5px;
+        padding: 7px 10px;
+      }
+      .message-bubble-wrapper {
+        max-width: 92%;
+      }
+      .fab-new-chat {
+        width: 46px;
+        height: 46px;
+        bottom: 16px;
+        right: 16px;
+        font-size: 18px;
+      }
+    }
+
+    /* Short Device Height / Length (< 640px Height - e.g. Landscape Mobile / Split View) */
+    @media (max-height: 640px) {
+      .sidebar-header, .chat-header {
+        height: 48px;
+        padding: 0 10px;
+      }
+      .chat-avatar-wrapper, .header-avatar {
+        width: 36px;
+        height: 36px;
+      }
+      .drawer-header {
+        padding: 12px 14px;
+        flex-direction: row;
+        align-items: center;
+        gap: 12px;
+      }
+      .drawer-avatar {
+        width: 44px;
+        height: 44px;
+        font-size: 18px;
+      }
+      .drawer-menu-item {
+        padding: 8px 16px;
+      }
+      .onboarding-logo {
+        width: 48px;
+        height: 48px;
+        margin-bottom: 8px;
+      }
+      .onboarding-card {
+        padding: 16px;
+      }
+      .avatar-upload-wrapper {
+        width: 64px;
+        height: 64px;
+        margin-bottom: 12px;
+      }
+      .onboarding-card h2 {
+        font-size: 18px;
+        margin-bottom: 4px;
+      }
+      .onboarding-card p {
+        font-size: 12px;
+        margin-bottom: 12px;
+      }
+      .form-group {
+        margin-bottom: 10px;
+      }
+      .btn-primary {
+        padding: 10px;
+        margin-top: 6px;
+      }
+      .input-bar {
+        padding: 6px 10px;
+      }
+      .emoji-picker-popup, .attachment-popup {
+        max-height: 160px;
+        bottom: 52px;
+      }
+      .modal-card {
+        padding: 16px;
+        gap: 12px;
+        max-height: 92dvh;
+      }
+      .chat-empty-card i {
+        font-size: 36px;
+      }
+      .chat-empty-card {
+        padding: 16px 20px;
       }
     }
   </style>
