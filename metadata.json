@@ -1,0 +1,6 @@
+{
+  "name": "Telegram",
+  "description": "An exact visual and functional clone of Telegram with real-time WebSocket messaging, group chats, polls, file uploads, PWA installation, and Telegram dark mode theme.",
+  "requestFramePermissions": ["camera", "microphone", "geolocation"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
