@@ -1520,6 +1520,10 @@
             <i class="fa-solid fa-download"></i>
             <span>Install App</span>
           </div>
+          <div class="drawer-menu-item" id="drawer-menu-logout" style="color: var(--danger-color); margin-top: 12px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 12px;">
+            <i class="fa-solid fa-right-from-bracket" style="color: var(--danger-color);"></i>
+            <span>Log Out</span>
+          </div>
         </div>
       </div>
     </div>
@@ -1732,6 +1736,17 @@
         return name.slice(0, 2).toUpperCase();
       }
 
+      // Auto-check stored session before socket connects to prevent onboarding flicker on refresh
+      const existingSession = localStorage.getItem('telegram_user_session');
+      if (existingSession) {
+        try {
+          const sObj = JSON.parse(existingSession);
+          if (sObj && (sObj.userId || sObj.username)) {
+            hideOnboarding();
+          }
+        } catch (e) {}
+      }
+
       // Initialize Socket
       function initSocket() {
         socket = io({
@@ -1744,7 +1759,12 @@
           if (savedSession) {
             try {
               const sessionObj = JSON.parse(savedSession);
-              socket.emit('login', { userId: sessionObj.userId });
+              if (sessionObj && (sessionObj.userId || sessionObj.username)) {
+                hideOnboarding();
+                socket.emit('login', { userId: sessionObj.userId, username: sessionObj.username });
+              } else {
+                showOnboarding();
+              }
             } catch (e) {
               showOnboarding();
             }
@@ -1758,18 +1778,43 @@
           contactsList = res.contacts || [];
           (res.chats || []).forEach(c => chatsMap[c.id] = c);
 
+          // Always persist session details to ensure auto-login on refresh
+          localStorage.setItem('telegram_user_session', JSON.stringify({
+            userId: currentUser.id,
+            username: currentUser.username
+          }));
+
           hideOnboarding();
           updateDrawerUserInfo();
           renderChatList();
+
+          if (activeChatId && chatsMap[activeChatId]) {
+            socket.emit('fetch-chat', { chatId: activeChatId });
+            socket.emit('message-read', { chatId: activeChatId });
+          }
+        });
+
+        socket.on('login-error', () => {
+          localStorage.removeItem('telegram_user_session');
+          currentUser = null;
+          showOnboarding();
         });
 
         socket.on('registered', (user) => {
-          currentUser = user;
-          localStorage.setItem('telegram_user_session', JSON.stringify({ userId: user.userId }));
+          currentUser = {
+            id: user.userId,
+            username: user.username,
+            displayName: user.displayName,
+            avatarColor: user.avatarColor,
+            avatarUrl: user.avatarUrl
+          };
+          localStorage.setItem('telegram_user_session', JSON.stringify({
+            userId: user.userId,
+            username: user.username
+          }));
           hideOnboarding();
           updateDrawerUserInfo();
-          // Request login state to load chats
-          socket.emit('login', { userId: user.userId });
+          socket.emit('login', { userId: user.userId, username: user.username });
         });
 
         socket.on('registration-error', (err) => {
@@ -1786,8 +1831,13 @@
 
         socket.on('chat-history', (res) => {
           messagesMap[res.chatId] = res.messages || [];
+          if (res.messages && res.messages.length > 0 && chatsMap[res.chatId]) {
+            chatsMap[res.chatId].lastMessage = res.messages[res.messages.length - 1];
+          }
+          renderChatList();
           if (activeChatId === res.chatId) {
             renderActiveChatMessages();
+            socket.emit('message-read', { chatId: res.chatId });
           }
         });
 
@@ -1803,13 +1853,35 @@
             messagesMap[chatId].push(message);
           }
 
+          if (chatsMap[chatId]) {
+            chatsMap[chatId].lastMessage = message;
+            chatsMap[chatId].updatedAt = message.timestamp;
+          }
+
           renderChatList();
 
           if (activeChatId === chatId) {
             renderActiveChatMessages();
-            // Send read status
-            socket.emit('message-read', { chatId, lastMessageId: message.id });
+            // Send read status if in active chat
+            if (currentUser && message.senderId !== currentUser.id) {
+              socket.emit('message-read', { chatId, lastMessageId: message.id });
+            }
           }
+        });
+
+        socket.on('messages-read-update', (data) => {
+          const { chatId, readerId } = data;
+          if (messagesMap[chatId]) {
+            messagesMap[chatId].forEach(msg => {
+              if (!currentUser || msg.senderId === currentUser.id || msg.senderId !== readerId) {
+                msg.status = 'read';
+              }
+            });
+          }
+          if (activeChatId === chatId) {
+            renderActiveChatMessages();
+          }
+          renderChatList();
         });
 
         socket.on('user-status', (data) => {
@@ -1972,7 +2044,17 @@
         chatListContainer.innerHTML = '';
 
         const chats = Object.values(chatsMap);
-        chats.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+        chats.sort((a, b) => {
+          const msgsA = messagesMap[a.id] || [];
+          const lastA = msgsA.length > 0 ? msgsA[msgsA.length - 1] : a.lastMessage;
+          const timeA = lastA ? lastA.timestamp : (a.updatedAt || a.createdAt || 0);
+
+          const msgsB = messagesMap[b.id] || [];
+          const lastB = msgsB.length > 0 ? msgsB[msgsB.length - 1] : b.lastMessage;
+          const timeB = lastB ? lastB.timestamp : (b.updatedAt || b.createdAt || 0);
+
+          return timeB - timeA;
+        });
 
         chats.forEach(chat => {
           const item = document.createElement('div');
@@ -1987,7 +2069,7 @@
             title = 'Saved Messages';
             avatarColor = '#2aabee';
           } else if (chat.type === 'private') {
-            const otherUserId = chat.participants.find(p => p !== currentUser.id);
+            const otherUserId = chat.participants.find(p => p !== (currentUser ? currentUser.id : ''));
             const otherUser = contactsList.find(c => c.id === otherUserId);
             if (otherUser) {
               title = otherUser.displayName;
@@ -1998,12 +2080,15 @@
           }
 
           const msgs = messagesMap[chat.id] || [];
-          const lastMsg = msgs[msgs.length - 1];
+          const lastMsg = msgs.length > 0 ? msgs[msgs.length - 1] : chat.lastMessage;
           let previewText = 'No messages yet';
           let timeText = '';
 
           if (lastMsg) {
             previewText = lastMsg.text || (lastMsg.type === 'image' ? '📷 Photo' : lastMsg.type === 'poll' ? '📊 Poll' : '📎 Attachment');
+            if (chat.type !== 'saved' && currentUser && lastMsg.senderId === currentUser.id) {
+              previewText = 'You: ' + previewText;
+            }
             const d = new Date(lastMsg.timestamp);
             timeText = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
           }
@@ -2070,8 +2155,9 @@
 
         updateChatHeaderStatus();
 
-        // Fetch history if needed
+        // Fetch history and mark messages as read
         socket.emit('fetch-chat', { chatId });
+        socket.emit('message-read', { chatId });
       }
 
       function updateChatHeaderStatus() {
@@ -2527,6 +2613,17 @@
           });
         } else {
           alert('Telegram PWA is already installed or supported natively by your browser!');
+        }
+      });
+
+      // Log Out Action
+      document.getElementById('drawer-menu-logout').addEventListener('click', () => {
+        drawerOverlay.classList.remove('open');
+        if (confirm('Are you sure you want to log out?')) {
+          localStorage.removeItem('telegram_user_session');
+          currentUser = null;
+          activeChatId = null;
+          showOnboarding();
         }
       });
 

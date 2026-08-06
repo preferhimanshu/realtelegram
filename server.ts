@@ -265,8 +265,15 @@ io.on("connection", (socket) => {
 
   // 2. LOGIN / RECONNECT
   socket.on("login", (data, callback) => {
-    const { userId } = data || {};
-    const user = users[userId];
+    const requestedId = data?.userId || data?.id;
+    let user = users[requestedId];
+
+    // Fallback: search by username if userId missing or not found
+    if (!user && data?.username) {
+      user = Object.values(users).find(
+        (u: any) => u.username && u.username.toLowerCase() === String(data.username).toLowerCase()
+      );
+    }
 
     if (!user) {
       const err = "User session expired or not found.";
@@ -275,6 +282,7 @@ io.on("connection", (socket) => {
       return;
     }
 
+    const userId = user.id;
     currentUserId = userId;
     if (!userSockets[userId]) userSockets[userId] = new Set();
     userSockets[userId].add(socket.id);
@@ -282,9 +290,18 @@ io.on("connection", (socket) => {
     user.lastSeen = Date.now();
     saveData();
 
-    // Get user's chats
+    // Get user's chats with last message populated
     const userChatList = (user.chats || [])
-      .map((cId: string) => chats[cId])
+      .map((cId: string) => {
+        const c = chats[cId];
+        if (!c) return null;
+        const chatMsgs = messages[cId] || [];
+        const lastMsg = chatMsgs.length > 0 ? chatMsgs[chatMsgs.length - 1] : null;
+        return {
+          ...c,
+          lastMessage: lastMsg
+        };
+      })
       .filter(Boolean);
 
     // All available users for contacts list
@@ -350,8 +367,11 @@ io.on("connection", (socket) => {
       });
 
       if (existingChat) {
-        if (callback) callback({ success: true, chat: existingChat });
-        socket.emit("chat-opened", existingChat);
+        const chatMsgs = messages[existingChat.id] || [];
+        const lastMsg = chatMsgs.length > 0 ? chatMsgs[chatMsgs.length - 1] : null;
+        const chatWithLastMsg = { ...existingChat, lastMessage: lastMsg };
+        if (callback) callback({ success: true, chat: chatWithLastMsg });
+        socket.emit("chat-opened", chatWithLastMsg);
         return;
       }
     }
@@ -410,6 +430,9 @@ io.on("connection", (socket) => {
     const { chatId, tempId, text, type, data: msgData } = data || {};
     if (!currentUserId || !chatId || !chats[chatId]) return;
 
+    const chat = chats[chatId];
+    const initialStatus = chat && chat.type === "saved" ? "read" : "sent";
+
     const msgId = "msg_" + uuidv4().slice(0, 10);
     const newMsg = {
       id: msgId,
@@ -418,12 +441,14 @@ io.on("connection", (socket) => {
       text: text || "",
       timestamp: Date.now(),
       type: type || "text",
-      status: "sent",
+      status: initialStatus,
       data: msgData || null
     };
 
     if (!messages[chatId]) messages[chatId] = [];
     messages[chatId].push(newMsg);
+    chat.lastMessage = newMsg;
+    chat.updatedAt = newMsg.timestamp;
     saveData();
 
     const payload = {
@@ -433,7 +458,6 @@ io.on("connection", (socket) => {
     };
 
     // Broadcast to all participants in this chat
-    const chat = chats[chatId];
     chat.participants.forEach((pId: string) => {
       if (userSockets[pId]) {
         userSockets[pId].forEach((sId) => {
@@ -460,7 +484,10 @@ io.on("connection", (socket) => {
 
     if (updated) {
       saveData();
-      const chat = chats[chatId];
+    }
+
+    const chat = chats[chatId];
+    if (chat && chat.participants) {
       chat.participants.forEach((pId: string) => {
         if (userSockets[pId]) {
           userSockets[pId].forEach((sId) => {
