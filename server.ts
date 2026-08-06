@@ -427,7 +427,7 @@ io.on("connection", (socket) => {
 
   // 6. SEND MESSAGE
   socket.on("send-message", (data, callback) => {
-    const { chatId, tempId, text, type, data: msgData } = data || {};
+    const { chatId, tempId, text, type, replyTo, data: msgData } = data || {};
     if (!currentUserId || !chatId || !chats[chatId]) return;
 
     const chat = chats[chatId];
@@ -442,6 +442,8 @@ io.on("connection", (socket) => {
       timestamp: Date.now(),
       type: type || "text",
       status: initialStatus,
+      replyTo: replyTo || null,
+      reactions: {},
       data: msgData || null
     };
 
@@ -467,6 +469,123 @@ io.on("connection", (socket) => {
     });
 
     if (callback) callback({ success: true, message: newMsg });
+  });
+
+  // 6b. EDIT MESSAGE
+  socket.on("edit-message", (data, callback) => {
+    const { chatId, messageId, newText } = data || {};
+    if (!currentUserId || !chatId || !messageId || !messages[chatId]) return;
+
+    const chat = chats[chatId];
+    const msg = messages[chatId].find((m) => m.id === messageId);
+    if (!msg) return;
+
+    if (msg.senderId !== currentUserId) {
+      if (callback) callback({ success: false, error: "Unauthorized" });
+      return;
+    }
+
+    msg.text = newText || "";
+    msg.isEdited = true;
+    msg.editedAt = Date.now();
+
+    if (chat && chat.lastMessage && chat.lastMessage.id === messageId) {
+      chat.lastMessage.text = newText;
+    }
+
+    saveData();
+
+    const payload = { chatId, messageId, text: msg.text, isEdited: true, editedAt: msg.editedAt };
+
+    if (chat && chat.participants) {
+      chat.participants.forEach((pId: string) => {
+        if (userSockets[pId]) {
+          userSockets[pId].forEach((sId) => {
+            io.to(sId).emit("message-edited", payload);
+          });
+        }
+      });
+    }
+
+    if (callback) callback({ success: true, message: msg });
+  });
+
+  // 6c. DELETE MESSAGE
+  socket.on("delete-message", (data, callback) => {
+    const { chatId, messageId } = data || {};
+    if (!currentUserId || !chatId || !messageId || !messages[chatId]) return;
+
+    const chat = chats[chatId];
+    const msgIndex = messages[chatId].findIndex((m) => m.id === messageId);
+    if (msgIndex === -1) return;
+
+    const msg = messages[chatId][msgIndex];
+    if (msg.senderId !== currentUserId) {
+      if (callback) callback({ success: false, error: "Unauthorized" });
+      return;
+    }
+
+    messages[chatId].splice(msgIndex, 1);
+
+    const remainingMsgs = messages[chatId];
+    chat.lastMessage = remainingMsgs.length > 0 ? remainingMsgs[remainingMsgs.length - 1] : null;
+
+    saveData();
+
+    const payload = { chatId, messageId };
+
+    if (chat && chat.participants) {
+      chat.participants.forEach((pId: string) => {
+        if (userSockets[pId]) {
+          userSockets[pId].forEach((sId) => {
+            io.to(sId).emit("message-deleted", payload);
+          });
+        }
+      });
+    }
+
+    if (callback) callback({ success: true });
+  });
+
+  // 6d. TOGGLE EMOJI REACTION
+  socket.on("toggle-reaction", (data, callback) => {
+    const { chatId, messageId, emoji } = data || {};
+    if (!currentUserId || !chatId || !messageId || !emoji || !messages[chatId]) return;
+
+    const chat = chats[chatId];
+    const msg = messages[chatId].find((m) => m.id === messageId);
+    if (!msg) return;
+
+    if (!msg.reactions) msg.reactions = {};
+
+    const usersForEmoji = msg.reactions[emoji] || [];
+    const idx = usersForEmoji.indexOf(currentUserId);
+    if (idx !== -1) {
+      usersForEmoji.splice(idx, 1);
+      if (usersForEmoji.length === 0) {
+        delete msg.reactions[emoji];
+      } else {
+        msg.reactions[emoji] = usersForEmoji;
+      }
+    } else {
+      msg.reactions[emoji] = [...usersForEmoji, currentUserId];
+    }
+
+    saveData();
+
+    const payload = { chatId, messageId, reactions: msg.reactions };
+
+    if (chat && chat.participants) {
+      chat.participants.forEach((pId: string) => {
+        if (userSockets[pId]) {
+          userSockets[pId].forEach((sId) => {
+            io.to(sId).emit("reaction-updated", payload);
+          });
+        }
+      });
+    }
+
+    if (callback) callback({ success: true, reactions: msg.reactions });
   });
 
   // 7. MESSAGE READ RECEIPTS

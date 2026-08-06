@@ -8,7 +8,7 @@
   <meta name="theme-color" content="#5682a3" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <link rel="icon" type="image/svg+xml" href="/icon-192.png" />
+  <link rel="icon" type="image/svg+xml" href="/telegram-official-logo.svg" />
 
   <!-- Google Fonts: Roboto -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -959,6 +959,212 @@
       transform: scale(0.95);
     }
 
+    /* Input Action Banner (Reply / Edit preview bar) */
+    .input-action-banner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--bg-sidebar-top);
+      border-bottom: 1px solid var(--border-color);
+      padding: 8px 16px;
+      width: 100%;
+    }
+    .banner-content {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      overflow: hidden;
+    }
+    .banner-icon {
+      color: var(--accent-blue);
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+    .banner-text-info {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .banner-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--accent-blue);
+    }
+    .banner-subtitle {
+      font-size: 12px;
+      color: var(--secondary-text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .banner-close-btn {
+      background: transparent;
+      border: none;
+      color: var(--secondary-text);
+      font-size: 16px;
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 50%;
+    }
+    .banner-close-btn:hover {
+      color: #fff;
+      background: rgba(255,255,255,0.1);
+    }
+
+    /* Reaction & Action Trigger on Messages */
+    .message-actions-trigger {
+      opacity: 0;
+      position: absolute;
+      top: 4px;
+      right: -28px;
+      background: rgba(0,0,0,0.4);
+      border: none;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255,255,255,0.8);
+      font-size: 12px;
+      cursor: pointer;
+      transition: opacity 0.2s;
+      z-index: 5;
+    }
+    .received .message-actions-trigger {
+      right: auto;
+      left: -28px;
+    }
+    .message-bubble-wrapper:hover .message-actions-trigger {
+      opacity: 1;
+    }
+
+    .message-reactions-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 6px;
+    }
+    .reaction-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 12px;
+      padding: 2px 8px;
+      font-size: 12px;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.15s ease;
+    }
+    .reaction-pill:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+    .reaction-pill.active {
+      background: rgba(42, 171, 238, 0.25);
+      border-color: var(--accent-blue);
+      color: var(--accent-blue);
+    }
+
+    /* Reply Quote Box inside Message */
+    .message-reply-quote {
+      background: rgba(0, 0, 0, 0.22);
+      border-left: 3px solid var(--accent-blue);
+      border-radius: 4px;
+      padding: 4px 8px;
+      margin-bottom: 6px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+    .reply-author {
+      font-weight: 600;
+      color: var(--accent-blue);
+      display: block;
+    }
+    .reply-text {
+      color: rgba(255, 255, 255, 0.85);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: block;
+    }
+
+    /* Context Menu / Popover */
+    .message-action-popover {
+      position: absolute;
+      top: -42px;
+      right: 0;
+      background: var(--bg-sidebar);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      padding: 4px 8px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      z-index: 100;
+    }
+    .received .message-action-popover {
+      right: auto;
+      left: 0;
+    }
+    .quick-react-emoji {
+      font-size: 18px;
+      cursor: pointer;
+      padding: 2px 6px;
+      border-radius: 12px;
+      transition: transform 0.15s;
+    }
+    .quick-react-emoji:hover {
+      transform: scale(1.3);
+      background: rgba(255,255,255,0.1);
+    }
+
+    .message-menu-dropdown {
+      position: absolute;
+      top: 32px;
+      right: 0;
+      background: var(--bg-sidebar);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+      padding: 4px;
+      z-index: 100;
+      min-width: 140px;
+      display: flex;
+      flex-direction: column;
+    }
+    .received .message-menu-dropdown {
+      right: auto;
+      left: 0;
+    }
+    .msg-menu-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      font-size: 13px;
+      color: #fff;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .msg-menu-item:hover {
+      background: rgba(255,255,255,0.08);
+    }
+    .msg-menu-item.danger {
+      color: var(--danger-color);
+    }
+
+    .highlight-msg {
+      animation: pulseHighlight 1.5s ease-out;
+    }
+    @keyframes pulseHighlight {
+      0% { background-color: rgba(42, 171, 238, 0.4); border-radius: 12px; }
+      100% { background-color: transparent; }
+    }
+
     /* ==================== HAMBURGER DRAWER ==================== */
     .drawer-overlay {
       position: fixed;
@@ -1337,15 +1543,17 @@
     <!-- ONBOARDING SCREEN -->
     <div id="onboarding-screen">
       <div class="onboarding-card">
-        <svg class="onboarding-logo" viewBox="0 0 512 512">
+        <svg class="onboarding-logo" viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg">
           <defs>
-            <linearGradient id="obGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <linearGradient id="obGrad" x1="50%" y1="0%" x2="50%" y2="100%">
               <stop offset="0%" stop-color="#2AABEE"/>
               <stop offset="100%" stop-color="#229ED9"/>
             </linearGradient>
           </defs>
-          <circle cx="256" cy="256" r="256" fill="url(#obGrad)"/>
-          <path fill="#FFFFFF" d="M381.1 143.1L107.5 248.6c-18.7 7.5-18.6 17.9-3.4 22.5l70.2 21.9 162.6-102.6c7.7-4.7 14.7-2.1 8.9 3.1L214 286.3l-5.1 72.8c7.1 0 10.3-3.3 14.3-7.2l34.4-33.5 71.5 52.8c13.2 7.3 22.7 3.5 26-12.2l46.9-221.1c4.8-19.3-7.3-28-19.9-22.3z"/>
+          <circle cx="120" cy="120" r="120" fill="url(#obGrad)"/>
+          <path fill="#FFFFFF" opacity="0.35" d="M98 175c-3.88 0-3.21-1.46-4.56-5.18L79.6 124.5 170.8 70c4.31-2.61 8.27-1.2 5.02 1.69L98 175z"/>
+          <path fill="#FFFFFF" opacity="0.75" d="M98 175c3 0 4.33-1.37 6-3l16.12-15.68-20.12-12.14V175z"/>
+          <path fill="#FFFFFF" d="M99.98 144.18l48.47 35.81c5.52 3.05 9.5 1.47 10.88-5.1l19.72-92.93c2.02-8.08-3.08-11.75-8.36-9.35L53.07 117.77c-7.89 3.16-7.84 7.56-1.44 9.52l30.17 9.42 69.86-44.07c3.3-2 6.32-.93 3.83 1.28l-55.51 50.26z"/>
         </svg>
 
         <h2>Welcome to Telegram</h2>
@@ -1380,6 +1588,11 @@
         </div>
 
         <button class="btn-primary" id="ob-submit-btn" disabled>Create Account</button>
+
+        <div class="splash-footer" style="margin-top: 24px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.08); font-size: 13px; color: var(--secondary-text); font-weight: 500; text-align: center; display: flex; align-items: center; justify-content: center; gap: 6px;">
+          <i class="fa-solid fa-heart" style="font-size: 11px; color: var(--accent-blue);"></i>
+          <span>Made by Himanshu</span>
+        </div>
       </div>
     </div>
 
@@ -1440,6 +1653,20 @@
         <!-- Messages Container -->
         <div class="messages-container" id="messages-container">
           <!-- Messages rendered dynamically -->
+        </div>
+
+        <!-- Input Action Banner (Reply / Edit preview bar) -->
+        <div class="input-action-banner hidden" id="input-action-banner">
+          <div class="banner-content">
+            <i class="fa-solid fa-reply banner-icon" id="banner-icon"></i>
+            <div class="banner-text-info">
+              <span class="banner-title" id="banner-title">Replying to User</span>
+              <span class="banner-subtitle" id="banner-subtitle">Message preview...</span>
+            </div>
+          </div>
+          <button class="banner-close-btn" id="cancel-action-banner-btn" title="Cancel">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
         </div>
 
         <!-- Input Bar -->
@@ -1516,6 +1743,11 @@
             <i class="fa-solid fa-gear"></i>
             <span>Settings</span>
           </div>
+          <div class="drawer-menu-item" id="drawer-menu-notifications">
+            <i class="fa-solid fa-bell"></i>
+            <span>Notifications</span>
+            <span class="notification-status-badge" id="notif-status-badge" style="margin-left: auto; font-size: 11px; padding: 2px 8px; border-radius: 10px; background: rgba(255,255,255,0.1); color: var(--secondary-text);">Off</span>
+          </div>
           <div class="drawer-menu-item" id="drawer-menu-pwa-install">
             <i class="fa-solid fa-download"></i>
             <span>Install App</span>
@@ -1523,6 +1755,9 @@
           <div class="drawer-menu-item" id="drawer-menu-logout" style="color: var(--danger-color); margin-top: 12px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 12px;">
             <i class="fa-solid fa-right-from-bracket" style="color: var(--danger-color);"></i>
             <span>Log Out</span>
+          </div>
+          <div style="margin-top: 20px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.08); text-align: center; font-size: 12px; color: var(--secondary-text); font-weight: 500;">
+            Telegram Web • Made by Himanshu
           </div>
         </div>
       </div>
@@ -1626,11 +1861,16 @@
 
     <!-- LIGHTBOX MODAL -->
     <div class="modal-overlay" id="lightbox-modal">
-      <div style="position: relative;">
-        <img id="lightbox-img" src="" alt="Full preview" />
-        <button class="close-modal-btn" id="close-lightbox" style="position: absolute; top: -40px; right: 0; color: #fff; font-size: 24px;">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
+      <div style="position: relative; display: flex; flex-direction: column; align-items: center; max-width: 90vw; max-height: 90vh;">
+        <div style="position: absolute; top: -48px; right: 0; display: flex; gap: 12px; align-items: center; z-index: 10;">
+          <a id="lightbox-download-btn" href="#" download target="_blank" title="Download Image" style="color: #fff; font-size: 18px; text-decoration: none; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.2); border-radius: 50%; backdrop-filter: blur(4px);">
+            <i class="fa-solid fa-download"></i>
+          </a>
+          <button class="close-modal-btn" id="close-lightbox" style="color: #fff; font-size: 20px; background: rgba(255,255,255,0.2); border-radius: 50%; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; border: none; cursor: pointer; backdrop-filter: blur(4px);">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <img id="lightbox-img" src="" alt="Full preview" style="max-width: 90vw; max-height: 80vh; object-fit: contain; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.8);" />
       </div>
     </div>
 
@@ -1660,7 +1900,17 @@
       let deferredPwaInstallPrompt = null;
       let uploadedOnboardingAvatarUrl = null;
 
+      // Action Banner & Context Menu State
+      let replyingToMessage = null;
+      let editingMessage = null;
+      window.activeMessageMenuId = null;
+
       // DOM Elements
+      const inputActionBanner = document.getElementById('input-action-banner');
+      const bannerIcon = document.getElementById('banner-icon');
+      const bannerTitle = document.getElementById('banner-title');
+      const bannerSubtitle = document.getElementById('banner-subtitle');
+      const cancelActionBannerBtn = document.getElementById('cancel-action-banner-btn');
       const onboardingScreen = document.getElementById('onboarding-screen');
       const obAvatarTrigger = document.getElementById('ob-avatar-trigger');
       const obAvatarInput = document.getElementById('ob-avatar-input');
@@ -1866,6 +2116,58 @@
             if (currentUser && message.senderId !== currentUser.id) {
               socket.emit('message-read', { chatId, lastMessageId: message.id });
             }
+          }
+
+          // Trigger Push Notification if message from another user
+          if (message && currentUser && message.senderId !== currentUser.id) {
+            triggerPushNotification(chatId, message);
+          }
+        });
+
+        socket.on('message-edited', (data) => {
+          const { chatId, messageId, text, isEdited, editedAt } = data;
+          if (messagesMap[chatId]) {
+            const msg = messagesMap[chatId].find(m => m.id === messageId);
+            if (msg) {
+              msg.text = text;
+              msg.isEdited = isEdited;
+              msg.editedAt = editedAt;
+            }
+          }
+          if (chatsMap[chatId] && chatsMap[chatId].lastMessage && chatsMap[chatId].lastMessage.id === messageId) {
+            chatsMap[chatId].lastMessage.text = text;
+          }
+          if (activeChatId === chatId) {
+            renderActiveChatMessages();
+          }
+          renderChatList();
+        });
+
+        socket.on('message-deleted', (data) => {
+          const { chatId, messageId } = data;
+          if (messagesMap[chatId]) {
+            messagesMap[chatId] = messagesMap[chatId].filter(m => m.id !== messageId);
+            if (chatsMap[chatId]) {
+              const msgs = messagesMap[chatId];
+              chatsMap[chatId].lastMessage = msgs.length > 0 ? msgs[msgs.length - 1] : null;
+            }
+          }
+          if (activeChatId === chatId) {
+            renderActiveChatMessages();
+          }
+          renderChatList();
+        });
+
+        socket.on('reaction-updated', (data) => {
+          const { chatId, messageId, reactions } = data;
+          if (messagesMap[chatId]) {
+            const msg = messagesMap[chatId].find(m => m.id === messageId);
+            if (msg) {
+              msg.reactions = reactions;
+            }
+          }
+          if (activeChatId === chatId) {
+            renderActiveChatMessages();
           }
         });
 
@@ -2191,18 +2493,119 @@
         appContainer.classList.remove('chat-active');
       });
 
+      // Action Banner Helpers
+      window.setReplyMessage = function(msg) {
+        replyingToMessage = msg;
+        editingMessage = null;
+        bannerIcon.className = 'fa-solid fa-reply banner-icon';
+        bannerTitle.textContent = 'Replying to ' + getSenderDisplayName(msg.senderId);
+        bannerSubtitle.textContent = msg.text || (msg.type === 'image' ? 'Photo' : 'Attachment');
+        inputActionBanner.classList.remove('hidden');
+        messageInputTextarea.focus();
+        window.activeMessageMenuId = null;
+        renderActiveChatMessages();
+      };
+
+      window.setEditMessage = function(msg) {
+        editingMessage = msg;
+        replyingToMessage = null;
+        bannerIcon.className = 'fa-solid fa-pen banner-icon';
+        bannerTitle.textContent = 'Edit Message';
+        bannerSubtitle.textContent = msg.text;
+        messageInputTextarea.value = msg.text;
+        inputActionBanner.classList.remove('hidden');
+        messageInputTextarea.focus();
+        window.activeMessageMenuId = null;
+        renderActiveChatMessages();
+      };
+
+      function cancelInputActionBanner() {
+        replyingToMessage = null;
+        editingMessage = null;
+        inputActionBanner.classList.add('hidden');
+        messageInputTextarea.value = '';
+      }
+
+      if (cancelActionBannerBtn) {
+        cancelActionBannerBtn.addEventListener('click', cancelInputActionBanner);
+      }
+
+      window.toggleReaction = function(messageId, emoji) {
+        if (!activeChatId) return;
+        socket.emit('toggle-reaction', { chatId: activeChatId, messageId, emoji });
+      };
+
+      window.deleteMessage = function(messageId) {
+        if (!activeChatId) return;
+        if (confirm('Are you sure you want to delete this message?')) {
+          socket.emit('delete-message', { chatId: activeChatId, messageId });
+        }
+      };
+
+      window.toggleMessageMenu = function(messageId) {
+        if (window.activeMessageMenuId === messageId) {
+          window.activeMessageMenuId = null;
+        } else {
+          window.activeMessageMenuId = messageId;
+        }
+        renderActiveChatMessages();
+      };
+
+      window.scrollToMessage = function(msgId) {
+        const el = document.getElementById('msg-' + msgId);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          el.classList.add('highlight-msg');
+          setTimeout(() => el.classList.remove('highlight-msg'), 1500);
+        }
+      };
+
+      function getSenderDisplayName(senderId) {
+        if (!senderId) return 'User';
+        if (currentUser && senderId === currentUser.id) return 'You';
+        const contact = contactsList.find(c => c.id === senderId);
+        return contact ? contact.displayName : 'User';
+      }
+
+      // Dismiss message context menus on click outside
+      document.addEventListener('click', (e) => {
+        if (window.activeMessageMenuId && !e.target.closest('.message-bubble') && !e.target.closest('.message-actions-trigger')) {
+          window.activeMessageMenuId = null;
+          renderActiveChatMessages();
+        }
+      });
+
       // Render Active Chat Messages
       function renderActiveChatMessages() {
         messagesContainer.innerHTML = '';
         const msgs = messagesMap[activeChatId] || [];
+        const currentChat = chatsMap[activeChatId];
 
         msgs.forEach((msg) => {
           const isSent = msg.senderId === currentUser.id;
           const wrapper = document.createElement('div');
+          wrapper.id = 'msg-' + msg.id;
           wrapper.className = `message-bubble-wrapper ${isSent ? 'sent' : 'received'}`;
 
           const date = new Date(msg.timestamp);
           const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+          // Sender name in group chat
+          let groupSenderHtml = '';
+          if (currentChat && currentChat.type === 'group' && !isSent) {
+            groupSenderHtml = `<div class="sender-name">${escapeHtml(getSenderDisplayName(msg.senderId))}</div>`;
+          }
+
+          // Reply Quote inside Message
+          let replyQuoteHtml = '';
+          if (msg.replyTo) {
+            replyQuoteHtml = `
+              <div class="message-reply-quote" onclick="event.stopPropagation(); scrollToMessage('${msg.replyTo.id}')">
+                <span class="reply-author">${escapeHtml(msg.replyTo.senderName || 'Message')}</span>
+                <span class="reply-text">${escapeHtml(msg.replyTo.text || 'Attachment')}</span>
+              </div>
+            `;
+          }
 
           let contentHtml = '';
           if (msg.type === 'text') {
@@ -2210,7 +2613,7 @@
           } else if (msg.type === 'image') {
             contentHtml = `
               ${msg.text ? `<div>${escapeHtml(msg.text)}</div>` : ''}
-              <img src="${msg.data.url}" class="message-media-img" onclick="openLightbox('${msg.data.url}')" />
+              <img src="${msg.data.url}" class="message-media-img" onclick="openLightbox('${msg.data.url}', '${escapeHtml(msg.data.filename || 'photo.png')}')" />
             `;
           } else if (msg.type === 'file') {
             contentHtml = `
@@ -2255,6 +2658,32 @@
             `;
           }
 
+          // Reactions HTML
+          let reactionsHtml = '';
+          if (msg.reactions && Object.keys(msg.reactions).length > 0) {
+            const pills = Object.entries(msg.reactions).map(([emoji, uIds]) => {
+              if (!uIds || uIds.length === 0) return '';
+              const active = uIds.includes(currentUser.id) ? 'active' : '';
+              return `<span class="reaction-pill ${active}" onclick="event.stopPropagation(); toggleReaction('${msg.id}', '${emoji}')">${emoji} ${uIds.length}</span>`;
+            }).join('');
+            if (pills) reactionsHtml = `<div class="message-reactions-container">${pills}</div>`;
+          }
+
+          // Menu Dropdown & Reaction Popover
+          let menuHtml = '';
+          if (window.activeMessageMenuId === msg.id) {
+            menuHtml = `
+              <div class="message-action-popover" onclick="event.stopPropagation()">
+                ${['👍', '❤️', '😂', '😮', '😢', '🔥', '🎉'].map(e => `<span class="quick-react-emoji" onclick="event.stopPropagation(); toggleReaction('${msg.id}', '${e}'); window.activeMessageMenuId=null; renderActiveChatMessages();">${e}</span>`).join('')}
+              </div>
+              <div class="message-menu-dropdown" onclick="event.stopPropagation()">
+                <div class="msg-menu-item" onclick="event.stopPropagation(); setReplyMessage(messagesMap['${activeChatId}'].find(m => m.id === '${msg.id}'));"><i class="fa-solid fa-reply"></i> Reply</div>
+                ${isSent && msg.type === 'text' ? `<div class="msg-menu-item" onclick="event.stopPropagation(); setEditMessage(messagesMap['${activeChatId}'].find(m => m.id === '${msg.id}'));"><i class="fa-solid fa-pen"></i> Edit</div>` : ''}
+                ${isSent ? `<div class="msg-menu-item danger" onclick="event.stopPropagation(); deleteMessage('${msg.id}'); window.activeMessageMenuId=null;"><i class="fa-solid fa-trash"></i> Delete</div>` : ''}
+              </div>
+            `;
+          }
+
           let ticksHtml = '';
           if (isSent) {
             ticksHtml = msg.status === 'read' 
@@ -2263,9 +2692,17 @@
           }
 
           wrapper.innerHTML = `
+            ${groupSenderHtml}
             <div class="message-bubble">
+              <button class="message-actions-trigger" onclick="event.stopPropagation(); toggleMessageMenu('${msg.id}')" title="Options">
+                <i class="fa-solid fa-ellipsis"></i>
+              </button>
+              ${menuHtml}
+              ${replyQuoteHtml}
               ${contentHtml}
+              ${reactionsHtml}
               <div class="message-footer">
+                ${msg.isEdited ? '<span style="font-size: 10px; opacity: 0.7; margin-right: 3px;">edited</span>' : ''}
                 <span>${timeStr}</span>
                 ${ticksHtml}
               </div>
@@ -2322,18 +2759,95 @@
         if (el) el.remove();
       }
 
+      // Push Notification Trigger Helper
+      function triggerPushNotification(chatId, message) {
+        if (!('Notification' in window) || Notification.permission !== 'granted') return;
+        if (!document.hidden && activeChatId === chatId) return;
+
+        const chat = chatsMap[chatId];
+        const sender = contactsList.find(c => c.id === message.senderId);
+        const title = (chat && chat.type === 'group') ? chat.name : (sender ? sender.displayName : 'New Message');
+        const body = message.text || (message.type === 'image' ? '📷 Photo' : '📎 Attachment');
+
+        try {
+          const n = new Notification(title, {
+            body,
+            icon: '/telegram-official-avatar.png'
+          });
+          n.onclick = () => {
+            window.focus();
+            openChat(chatId);
+          };
+        } catch (e) {}
+      }
+
+      function updateNotificationBadge() {
+        const badge = document.getElementById('notif-status-badge');
+        if (!badge) return;
+        if (!('Notification' in window)) {
+          badge.textContent = 'Unsupported';
+          return;
+        }
+        if (Notification.permission === 'granted') {
+          badge.textContent = 'On';
+          badge.style.background = 'rgba(74, 222, 128, 0.2)';
+          badge.style.color = '#4ade80';
+        } else if (Notification.permission === 'denied') {
+          badge.textContent = 'Blocked';
+          badge.style.background = 'rgba(239, 68, 68, 0.2)';
+          badge.style.color = '#ef4444';
+        } else {
+          badge.textContent = 'Off';
+        }
+      }
+
+      const notifBtn = document.getElementById('drawer-menu-notifications');
+      if (notifBtn) {
+        notifBtn.addEventListener('click', () => {
+          if (!('Notification' in window)) {
+            alert('Notifications are not supported in this browser.');
+            return;
+          }
+          if (Notification.permission === 'granted') {
+            alert('Browser push notifications are enabled!');
+          } else if (Notification.permission === 'denied') {
+            alert('Notifications are currently blocked in your browser settings.');
+          } else {
+            Notification.requestPermission().then(() => updateNotificationBadge());
+          }
+        });
+      }
+
       // Send Message
       function sendTextMessage() {
         const text = messageInputTextarea.value.trim();
         if (!text || !activeChatId) return;
 
-        const tempId = 'temp_' + Date.now();
-        socket.emit('send-message', {
-          chatId: activeChatId,
-          tempId,
-          text,
-          type: 'text'
-        });
+        if (editingMessage) {
+          socket.emit('edit-message', {
+            chatId: activeChatId,
+            messageId: editingMessage.id,
+            newText: text
+          });
+          cancelInputActionBanner();
+        } else {
+          const tempId = 'temp_' + Date.now();
+          const payload = {
+            chatId: activeChatId,
+            tempId,
+            text,
+            type: 'text'
+          };
+          if (replyingToMessage) {
+            payload.replyTo = {
+              id: replyingToMessage.id,
+              senderName: getSenderDisplayName(replyingToMessage.senderId),
+              text: replyingToMessage.text || (replyingToMessage.type === 'image' ? 'Photo' : 'Attachment')
+            };
+          }
+          socket.emit('send-message', payload);
+          cancelInputActionBanner();
+        }
 
         messageInputTextarea.value = '';
         messageInputTextarea.style.height = 'auto';
@@ -2592,11 +3106,18 @@
       });
 
       // Lightbox
-      window.openLightbox = function(url) {
+      window.openLightbox = function(url, filename) {
         lightboxImg.src = url;
+        const dlBtn = document.getElementById('lightbox-download-btn');
+        if (dlBtn) {
+          dlBtn.href = url;
+          dlBtn.download = filename || 'downloaded-image.png';
+        }
         lightboxModal.classList.add('open');
       };
       document.getElementById('close-lightbox').addEventListener('click', () => lightboxModal.classList.remove('open'));
+
+      updateNotificationBadge();
 
       // PWA Install Prompt Capture
       window.addEventListener('beforeinstallprompt', (e) => {

@@ -1,0 +1,12 @@
+<svg viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="tg-logo-grad" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%" stop-color="#2AABEE"/>
+      <stop offset="100%" stop-color="#229ED9"/>
+    </linearGradient>
+  </defs>
+  <circle cx="120" cy="120" r="120" fill="url(#tg-logo-grad)"/>
+  <path fill="#FFFFFF" opacity="0.35" d="M98 175c-3.88 0-3.21-1.46-4.56-5.18L79.6 124.5 170.8 70c4.31-2.61 8.27-1.2 5.02 1.69L98 175z"/>
+  <path fill="#FFFFFF" opacity="0.75" d="M98 175c3 0 4.33-1.37 6-3l16.12-15.68-20.12-12.14V175z"/>
+  <path fill="#FFFFFF" d="M99.98 144.18l48.47 35.81c5.52 3.05 9.5 1.47 10.88-5.1l19.72-92.93c2.02-8.08-3.08-11.75-8.36-9.35L53.07 117.77c-7.89 3.16-7.84 7.56-1.44 9.52l30.17 9.42 69.86-44.07c3.3-2 6.32-.93 3.83 1.28l-55.51 50.26z"/>
+</svg>
