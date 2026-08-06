@@ -6,9 +6,8 @@ import multer from "multer";
 import cors from "cors";
 import { Server } from "socket.io";
 import { v4 as uuidv4 } from "uuid";
-import { createServer as createViteServer } from "vite";
 
-const PORT = 3000;
+const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
@@ -606,6 +605,7 @@ io.on("connection", (socket) => {
 // Vite Middleware for Development / Static Production Handler
 async function startServer() {
   if (process.env.NODE_ENV !== "production") {
+    const { createServer: createViteServer } = await import("vite");
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: "spa"
@@ -614,7 +614,7 @@ async function startServer() {
   } else {
     const distPath = path.join(process.cwd(), "dist");
     app.use(express.static(distPath));
-    app.get("*", (req, res) => {
+    app.get("(.*)", (req, res) => {
       res.sendFile(path.join(distPath, "index.html"));
     });
   }
